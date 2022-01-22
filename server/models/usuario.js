@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
+//Definimos roles válidos 
 let rolesValidos = {
     values: ["ADMIN_ROLE", "USER_ROLE"],
     message: '{VALUE} no es un rol válido'
@@ -41,6 +42,17 @@ let usuarioSchema = new Schema({
     }
 });
 
+//Elimina del JSON de respuesta el campo password.
+usuarioSchema.methods.toJSON = function () {
+
+    let user = this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+};
+
+//Para validar si existe un usuario con ese email en la BBDD
 usuarioSchema.plugin(uniqueValidator, {
     message : '{PATH} ya hay un Usuario registrado con ese email.'
 });
