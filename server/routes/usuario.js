@@ -19,19 +19,24 @@ app.get('/usuario', function (req, res) {
     let limite = req.query.limite || 5;
     limite = Number(limite);
 
-    Usuario.find({})
+    Usuario.find({}, 'nombre email role estado google img') //Entre llaves {} se utiliza para filtrar.
         .skip(desde)
         .limit(5)
-        .exec((err, usuarios)=>{
+        .exec((err, usuarios) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
                     err
                 });
             }
-            res.json({
-                ok: true,
-                usuarios
+            Usuario.count({}, (err, conteo) => {
+                res.json({
+                    ok: true,
+                    usuarios,
+                    cantidad: conteo
+                });
+
+
             });
         })
 });
@@ -85,7 +90,7 @@ app.put('/usuario/:id', function (req, res) {
 
     //Ver doc mongoose, el tercer parámetro {new: true} me devuelve el nuevo json con la modificación.
     //runValidators valida la actualización de la operación con respecto al modelo Schema.
-    Usuario.findByIdAndUpdate(id, body, {new:true, runValidators: true}, (err, usuarioDB)=>{
+    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioDB) => {
         //usuarioDB.save
         if (err) {
             return res.status(400).json({
@@ -94,15 +99,42 @@ app.put('/usuario/:id', function (req, res) {
             });
         }
         res.json({
-        ok: true,
-        usuario: usuarioDB
-    });
+            ok: true,
+            usuario: usuarioDB
+        });
     })
-    
+
 });
 
-app.delete('/usuario', function (req, res) {
-    res.json('DELETE /usuario');
+app.delete('/usuario/:id', function (req, res) {
+
+    let id = req.params.id;
+
+    Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        };
+        
+        //Si el usuario no existe devuelve un mensaje
+        if (!usuarioBorrado){
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: "Usuario no encontrado."
+                }
+            });
+        };
+
+        res.json({
+            ok: true,
+            usuario: usuarioBorrado
+        });
+    });
+
+    
 });
 
 module.exports = app;
