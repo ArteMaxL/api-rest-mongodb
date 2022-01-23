@@ -12,7 +12,28 @@ const app = express();
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/usuario', function (req, res) {
-    res.json('GET /usuario');
+
+    let desde = req.query.desde || 0;
+    desde = Number(desde); //Opcional por si da error
+
+    let limite = req.query.limite || 5;
+    limite = Number(limite);
+
+    Usuario.find({})
+        .skip(desde)
+        .limit(5)
+        .exec((err, usuarios)=>{
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.json({
+                ok: true,
+                usuarios
+            });
+        })
 });
 
 app.post('/usuario', function (req, res) {
