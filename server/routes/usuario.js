@@ -53,9 +53,23 @@ app.post('/usuario', function (req, res) {
 //Recibe por parámetro el id del usuario a actualizar
 app.put('/usuario/:id', function (req, res) {
     let id = req.params.id;
-    res.json({
-        id
+    let body = req.body;
+
+    //Ver doc mongoose, el tercer parámetro {new: true} me devuelve el nuevo json con la modificación 
+    Usuario.findByIdAndUpdate(id, body, {new:true}, (err, usuarioDB)=>{
+        //usuarioDB.save
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        res.json({
+        ok: true,
+        usuario: usuarioDB
     });
+    })
+    
 });
 
 app.delete('/usuario', function (req, res) {
