@@ -17,7 +17,7 @@ app.use(require("./routes/usuario"));
 
 
 //Conexión temporalemnte lo dejo aquí
-mongoose.connect('mongodb://127.0.0.1:27017/cafe', (err, res) => {
+mongoose.connect(process.env.URLDB, (err, res) => {
 
     if (err) throw err;
 
