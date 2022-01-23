@@ -13,13 +13,18 @@ const app = express();
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/usuario', function (req, res) {
 
+    //Que solo devuelva los usuarios que estan activos : estado: true
+    let estado = {
+        estado: true
+    };
+
     let desde = req.query.desde || 0;
     desde = Number(desde); //Opcional por si da error
 
     let limite = req.query.limite || 5;
-    limite = Number(limite);
+    limite = Number(limite); //Opcional por si da error
 
-    Usuario.find({}, 'nombre email role estado google img') //Entre llaves {} se utiliza para filtrar.
+    Usuario.find(estado, 'nombre email role estado google img') //Entre llaves {} se utiliza para filtrar.
         .skip(desde)
         .limit(5)
         .exec((err, usuarios) => {
@@ -29,7 +34,7 @@ app.get('/usuario', function (req, res) {
                     err
                 });
             }
-            Usuario.count({}, (err, conteo) => {
+            Usuario.count(estado, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
@@ -110,16 +115,23 @@ app.delete('/usuario/:id', function (req, res) {
 
     let id = req.params.id;
 
-    Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{
+    //Usuario.findByIdAndRemove(id, (err, usuarioBorrado)=>{
+
+    let cambiaEstado = {
+        estado: false
+    };
+
+    //Para no borrar el usuario de la BBDD, solo le cambiamos el estado a false
+    Usuario.findByIdAndUpdate(id, cambiaEstado, { new: true, runValidators: true }, (err, usuarioBorrado) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
                 err
             });
         };
-        
+
         //Si el usuario no existe devuelve un mensaje
-        if (!usuarioBorrado){
+        if (!usuarioBorrado) {
             return res.status(400).json({
                 ok: false,
                 err: {
@@ -134,7 +146,7 @@ app.delete('/usuario/:id', function (req, res) {
         });
     });
 
-    
+
 });
 
 module.exports = app;
