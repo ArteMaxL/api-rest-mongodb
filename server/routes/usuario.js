@@ -1,5 +1,9 @@
 const express = require('express');
+
 const bcrypt = require("bcrypt");
+
+const _ = require("underscore");
+
 const Usuario = require("../models/usuario");
 
 const app = express();
@@ -53,10 +57,14 @@ app.post('/usuario', function (req, res) {
 //Recibe por parámetro el id del usuario a actualizar
 app.put('/usuario/:id', function (req, res) {
     let id = req.params.id;
-    let body = req.body;
+    let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
 
-    //Ver doc mongoose, el tercer parámetro {new: true} me devuelve el nuevo json con la modificación 
-    Usuario.findByIdAndUpdate(id, body, {new:true}, (err, usuarioDB)=>{
+    //delete body.password;
+    //delete body.google;
+
+    //Ver doc mongoose, el tercer parámetro {new: true} me devuelve el nuevo json con la modificación.
+    //runValidators valida la actualización de la operación con respecto al modelo Schema.
+    Usuario.findByIdAndUpdate(id, body, {new:true, runValidators: true}, (err, usuarioDB)=>{
         //usuarioDB.save
         if (err) {
             return res.status(400).json({
