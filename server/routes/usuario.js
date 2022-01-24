@@ -5,13 +5,12 @@ const bcrypt = require("bcrypt");
 const _ = require("underscore");
 
 const Usuario = require("../models/usuario");
+const { verificaToken } = require("../middlewares/autenticacion");
 
 const app = express();
 
-
-
 // respond with "hello world" when a GET request is made to the homepage
-app.get('/usuario', function (req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
 
     //Que solo devuelva los usuarios que estan activos : estado: true
     let estado = {
