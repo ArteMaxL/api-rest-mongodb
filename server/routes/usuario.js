@@ -5,11 +5,11 @@ const bcrypt = require("bcrypt");
 const _ = require("underscore");
 
 const Usuario = require("../models/usuario");
-const { verificaToken } = require("../middlewares/autenticacion");
+const { verificaToken, verificaAdminRole } = require("../middlewares/autenticacion");
 
 const app = express();
 
-// respond with "hello world" when a GET request is made to the homepage
+//GET /usuario
 app.get('/usuario', verificaToken, (req, res) => {
 
     //Que solo devuelva los usuarios que estan activos : estado: true
@@ -43,7 +43,8 @@ app.get('/usuario', verificaToken, (req, res) => {
         })
 });
 
-app.post('/usuario', function (req, res) {
+//POST solo usuario con rol admin pueden hacerlo, se agregan los middlewares en un array.
+app.post('/usuario', [verificaToken, verificaAdminRole], (req, res) => {
 
     let body = req.body;
 
@@ -82,8 +83,8 @@ app.post('/usuario', function (req, res) {
     } */
 });
 
-//Recibe por parámetro el id del usuario a actualizar
-app.put('/usuario/:id', function (req, res) {
+//Recibe por parámetro el id del usuario a actualizar, solo usuarios con rol admin pueden modificar
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
 
@@ -108,7 +109,8 @@ app.put('/usuario/:id', function (req, res) {
 
 });
 
-app.delete('/usuario/:id', function (req, res) {
+//Solo usuario con admin role puede eliminar usuarios (solo cambia el estado a inactivo no borra todos los datos)
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], (req, res) => {
 
     let id = req.params.id;
 
