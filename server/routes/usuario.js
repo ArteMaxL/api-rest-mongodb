@@ -40,8 +40,6 @@ app.get('/usuario', function (req, res) {
                     usuarios,
                     cantidad: conteo
                 });
-
-
             });
         })
 });

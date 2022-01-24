@@ -27,9 +27,9 @@ client.connect(err => {
 let urlDB;
 
 //if (process.env.NODE_ENV === "dev"){
-//    urlDB = 'mongodb://127.0.0.1:27017/cafe';
+    urlDB = 'mongodb://127.0.0.1:27017/cafe';
 //} else {
-    urlDB = "mongodb+srv://admin:admin@pruebamongodb.nc6th.mongodb.net/PruebaMongoDB?retryWrites=true&w=majority";
+//    urlDB = "mongodb+srv://admin:admin@pruebamongodb.nc6th.mongodb.net/PruebaMongoDB?retryWrites=true&w=majority";
 //};
 
 process.env.URLDB = urlDB;
